@@ -1,5 +1,8 @@
 import express from 'express' // importando
 // igual a -> import express from 'express'
+
+import {v4 as uuidv4} from "uuid"
+
 const PORT = 3333
 
 const app = express() // pegando tudo o que o express tem
@@ -24,7 +27,18 @@ app.use(express.json()) // isso aqui vai fazer eu conseguir receber os dados lá
             Rotas do tipo POST - usadadas em cadastro de informações
 */
 
+// Middleware
+const logRoutes = (request, response, next) =>{
+    const {url, method} = request
+    const rota = `[${method.toUpperCase()}] ${url}`
+    console.log(rota)
+    next()
+}
 
+app.use(logRoutes) // vai fazer o middleware ser usado em todas as rotas sem precisar ficar colocando ele em cada uma delas
+
+
+const users = []
 // QUERY PARAMS - usado nessa rota get aqui
 // vamos colocar as rotas que vem do express, usando a constante app
 app.get('/users', (request, response)=>{  // se eu quero a rota get tenho que passar a rota e a função de callback com requisição e resposta
@@ -32,11 +46,7 @@ app.get('/users', (request, response)=>{  // se eu quero a rota get tenho que pa
     const {nome, idade} = request.query
     console.log(nome, idade)
 
-    response.status(200).json([
-        'Pessoa 1',
-        'Pessoa 2',
-        'Pessoa 3'
-    ]) // igual o que a gente fazia pra fazer aparecer uma mensagem de acordo com o código HTTP
+    response.status(200).json(users) // igual o que a gente fazia pra fazer aparecer uma mensagem de acordo com o código HTTP
 }) 
 
 
@@ -46,6 +56,30 @@ app.post('/users', (request, response)=>{  // aqui a mesma coisa, mas com a rota
     // console.log(body)
     const {nome, idade} = request.body
     console.log(nome, idade)
+
+    //validações
+    if(!nome){
+        response.status(400).json({message: "O nome é obrigatório"})
+        return
+    }
+
+    if(!idade){
+        response.status(400).json({message: "A idade é obrigatória"})
+        return
+    }
+
+    // para passar as informações para o banco de dados
+    const user = {
+        id: uuidv4(),
+        nome,
+        idade
+    }
+
+    users.push(user)
+    response.status(201).json({
+        message:"Usuário cadastrado",
+        user
+})
 
     response.status(201).json([
         'Pessoa 1',
@@ -57,19 +91,33 @@ app.post('/users', (request, response)=>{  // aqui a mesma coisa, mas com a rota
 
 
 // ROUTE PARAMS - usar nessa rota de PUT
-app.put('/users/:id/:cpf', (request, response)=>{ // colocando a rota dessa forma estaremos substituindo todo o trabalho de usar o split para pegar o id e afins
+app.put('/users/:id', (request, response)=>{ // colocando a rota dessa forma estaremos substituindo todo o trabalho de usar o split para pegar o id e afins
     // const id = request.params.id
     // const cpf = request.params.cpf
 
-    const {id, cpf} = request.params
-    console.log(id, cpf) // vai pegar o id da rota e retornar aqui
+    const {id} = request.params
+    const {nome, idade} = request.body
 
-    response.status(200).json([
-        'Pessoa 1',
-        'Pessoa 10',
-        'Pessoa 3',
-        'Pessoa 4'
-    ])
+    const indexUser = users.findIndex((user)=> user.id == id)
+    if(indexUser === -1){
+        response.status(404).json({message: "Usuário não encontrado"})
+        return
+    }
+
+    if(!nome  || !idade){
+        response.status(400).json({message:"Nome e idade é obrigatório"})
+        return
+    }
+
+    const updatedUser = {
+        id, 
+        nome, 
+        idade
+    }
+
+    users[indexUser] = updatedUser
+    response.status(200).json(updatedUser)
+
 })
 
 app.patch('/users', (request, response)=>{ 
@@ -77,11 +125,16 @@ app.patch('/users', (request, response)=>{
 }) 
 
 app.delete('/users', (request, response)=>{  
-    response.status(204).json([
-        'Pessoa 10',
-        'Pessoa 3',
-        'Pessoa 4'
-    ])
+    const id = request.params.id
+    const indexUser =users.findIndex((user)=> user.id == id)
+
+    if(indexUser === -1){
+        response.status(404).json({message: "Usuário não encontrado"})
+        return
+    }
+
+    users.splice(indexUser, 1)
+    response.status(204).send("apagado")
 }) 
 
 app.listen(PORT, ()=>{
