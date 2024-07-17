@@ -108,6 +108,21 @@ app.post("/livros", (request, response)=>{
 
 app.get('/livros/:id', (request, response)=>{
     const {id} = request.params // pega o id que for passado na rota
+
+    const sql = /*sql*/ `select * from livros where id = "${id}"`
+    conn.query(sql, (err, data) =>{
+        if(err){
+            response.status(500).json({message: "Erro ao buscar livro"})
+            return
+        }
+
+        if(data.length === 0){
+            response.status(404).json({message: "Livro não encontrado"})
+            return
+        }
+        const livro = data[0] // pra poder receber só o objeto, pq ele estava recebendo os livros dentro um outro objeto
+        response.status(200).json(livro)
+    })
 })
 
 app.put('/livros/:id', (request, response)=>{
