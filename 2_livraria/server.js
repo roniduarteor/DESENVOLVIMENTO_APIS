@@ -106,6 +106,18 @@ app.post("/livros", (request, response)=>{
     })
 })
 
+app.get('/livros/:id', (request, response)=>{
+    const {id} = request.params // pega o id que for passado na rota
+})
+
+app.put('/livros/:id', (request, response)=>{
+    const {id} = request.params // pega o id que for passado na rota
+})
+
+app.delete('/livros/:id', (request, response)=>{
+    const {id} = request.params // pega o id que for passado na rota
+})
+
 //rota 404
 app.use((request, response)=>{
     response.status(404).json({message: "Rota não encontrada"})
