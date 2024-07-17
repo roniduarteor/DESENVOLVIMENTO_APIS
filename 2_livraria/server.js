@@ -184,6 +184,21 @@ app.put('/livros/:id', (request, response)=>{
 
 app.delete('/livros/:id', (request, response)=>{
     const {id} = request.params // pega o id que for passado na rota
+
+    const deleteSql = /*sql*/ `delete from livros where id = "${id}"`
+    conn.query(deleteSql, (err, info)=>{
+        if(err){
+            console.error(err)
+            response.status(500).json({message: 'Erro ao deletar livro'})
+        }
+        console.log(info)
+        if(info.affectedRows === 0){
+            response.status(404).json({messagae: "Livro não encontrado"})
+            return
+        }
+
+        response.status(200).json({message: 'Livro selecionado foi deletado'})
+    })
 })
 
 //rota 404
