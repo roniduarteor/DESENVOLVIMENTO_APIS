@@ -127,6 +127,59 @@ app.get('/livros/:id', (request, response)=>{
 
 app.put('/livros/:id', (request, response)=>{
     const {id} = request.params // pega o id que for passado na rota
+
+    const {titulo, autor, ano_publicacao, genero, preco, disponibilidade} = request.body
+
+    // validações
+    if(!titulo){
+        response.status(400).json({message: 'O título é obrigatório!'})
+        return
+    }
+    if(!autor){
+        response.status(400).json({message: 'O autor é obrigatório!'})
+        return
+    }
+    if(!ano_publicacao){
+        response.status(400).json({message: 'O ano de publicação é obrigatório!'})
+        return
+    }
+    if(!genero){
+        response.status(400).json({message: 'O genero é obrigatório!'})
+        return
+    }
+    if(!preco){
+        response.status(400).json({message: 'O preco é obrigatório!'})
+        return
+    }
+
+    if(disponibilidade === undefined){ // precisa ser um valor de 1 ou 0, se for undefined ent está tendo algum erro, por isso a validação - O 0 representa um falso no banco de dados, ou seja, não tem disponibilidade
+        response.status(400).json({message: "A disponibilidade é obrigatória"})
+        return
+    }
+
+    const checkSql = /*sql*/ ` select * from livros where id = "${id}"` // aqui ele verifica no banco de dados se o id do livro corresponde ao id que está sendo passado aqui (no thunderclient)
+    conn.query(checkSql, (err, data)=>{
+        // validações para checar se o livro existe no banco de dados
+        if(err){
+        console.error(err)
+        response.status(500).json({message: "Erro ao buscar livros"})   
+        }
+
+        if(data.length === 0){
+            return response.status(404).json({message: "Livro não encontrado"})
+        }
+
+        // Consulta SQl para atualizar livro
+        const updateSql = /*sql*/ ` update livros set titulo = "${titulo}", autor = "${autor}", ano_publicacao = "${ano_publicacao}", genero = "${genero}", preco = "${preco}", disponibilidade = "${disponibilidade}" where id = "${id}"`
+        
+        conn.query(updateSql, (err)=>{
+            if(err){
+                console.error(err)
+                response.status(500).json({message: "Erro ao atualizar livro no banco de dados"})
+            }
+            response.status(200).json({message: "livro atualizado"})
+        })
+    })
 })
 
 app.delete('/livros/:id', (request, response)=>{
