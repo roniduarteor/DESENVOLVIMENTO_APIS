@@ -202,8 +202,8 @@ app.delete('/livros/:id', (request, response)=>{
 /******************************* rotas de Funcionários *******************************/
 /* id, nome, cargo, data_contratacao, salario, email, created_at, updated_at */
 // tem que ter validação para o email ser diferente
-// Rota 01 -> lista todos
-// Rota 02 -> cadastra funcionário ( único email por funcionário )
+// Rota 01 -> lista todos OK
+// Rota 02 -> cadastra funcionário ( único email por funcionário ) OK
 // Rota 03 -> Lista UM(1) funcionário
 // Rota 04 -> Atualiza UM(1) funcionário
 // rota 05 -> Deletar Um(1) funcionário
@@ -229,11 +229,90 @@ app.get('/funcionarios', (request, response)=>{
     conn.query(sql, (err, data)=>{
         if(err){
         console.error(err)
-        response.status(500).json({message: "Erro ao buscar todos os funcionarios"})    
+        response.status(500).json({message: "Erro ao buscar todos os funcionarios"}) 
+        return   
         }
         const livros = data
         response.status(200).json(livros)
-        
+    })
+})
+
+app.post('/funcionarios', (request, response)=>{
+    const {nome, cargo, data_contratacao, salario, email} = request.body
+
+    if(!nome){
+        response.status(500).json({message: "Nome do funcionário é obrigatório"})
+        return
+    }
+    if(!cargo){
+        response.status(500).json({message: "cargo do funcionário é obrigatório"})
+        return
+    }if(!data_contratacao){
+        response.status(500).json({message: "A data de contratação do funcionário é obrigatório"})
+        return
+    }if(!salario){
+        response.status(500).json({message: "salario do funcionário é obrigatório"})
+        return
+    }if(!email){
+        response.status(500).json({message: "email do funcionário é obrigatório"})
+        return
+    }
+
+    
+
+    const checkSql = /*sql*/ `
+    SELECT * FROM funcionarios
+    WHERE email = "${email}"
+    `
+    
+    conn.query(checkSql, (err, data)=>{
+        if(err){
+            console.error(err)
+            response.status(500).json({message: "Não foi possível verificar se o funcionário possuí registro"})
+            return
+        }
+        if(data.length > 0){
+            response.status(409).json({message: "Funcionário já cadastrado com esse email"})
+            return
+        }
+
+        const id = uuidv4()
+
+        const insertSql = /*sql*/ `INSERT INTO funcionarios(id, nome, cargo, data_contratacao, salario, email)
+        VALUES("${id}","${nome}","${cargo}","${data_contratacao}","${salario}","${email}")`
+
+        conn.query(insertSql, (err)=>{
+            if(err){
+                console.error(err)
+                response.status(500).json({message: "Erro ao cadastrar funcionário"})
+                return
+            }
+
+            response.status(201).json({message: "Funcionário cadastrado!"})
+        })
+    })
+
+    
+})
+
+app.get('/funcionarios/:id', (request, response)=>{
+    const {id} = request.params
+
+    const sql = /*sql*/ `SELECT * FROM funcionarios WHERE id = "${id}"`
+    conn.query(sql, (err, data)=>{
+        if(err){
+            console.error(err)
+            response.status(500).json({message: "Erro ao tentar buscar funcionário"})
+            return
+        }
+
+        if(data.length === 0){
+            response.status(404).json({message: "Funcionário não encontrado!"})
+            return
+        }
+
+        const funcionario = data[0]
+        response.status(200).json(funcionario)
     })
 })
 
