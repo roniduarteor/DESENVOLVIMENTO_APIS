@@ -206,7 +206,7 @@ app.delete('/livros/:id', (request, response)=>{
 // Rota 02 -> cadastra funcionário ( único email por funcionário ) OK
 // Rota 03 -> Lista UM(1) funcionário OK
 // Rota 04 -> Atualiza UM(1) funcionário OK
-// rota 05 -> Deletar Um(1) funcionário
+// rota 05 -> Deletar Um(1) funcionário OK
 
 const conn = mysql.createConnection({ // usado para estebelecar conexões
     host: "localhost",
@@ -348,23 +348,28 @@ app.put('/funcionarios/:id', (request, response)=>{
         }
 
         if(data.length === 0){
-            response.status(500).json({message: "Funcionário não existe no banco de dados"})
+            response.status(404).json({message: "Funcionário não existe no banco de dados"})
             return
         }
-
-        const updateSql = /*sql*/ `UPDATE funcionarios SET nome = "${nome}", cargo = "${cargo}", data_contratacao = "${data_contratacao}", salario = "${salario}", email = "${email}" WHERE id = "${id}"`
 
         const checkSqlEmail = /*sql*/ `
         SELECT * FROM funcionarios
         WHERE email = "${email}"`
 
-        conn.query(checkSqlEmail, (err)=>{
+        conn.query(checkSqlEmail, (err, data)=>{
             if(err){
                 console.error(err)
                 response.status(500).json({message: "Erro ao verificar se email já está cadastrado"})
                 return
             }
-        })
+            if(data.length > 0){
+                response.status(409).json({message: "Funcionário já possui esse email"})
+                return
+            }
+
+            const updateSql = /*sql*/ `UPDATE funcionarios SET nome = "${nome}", cargo = "${cargo}", data_contratacao = "${data_contratacao}", salario = "${salario}", email = "${email}" WHERE id = "${id}"`
+
+        
 
         conn.query(updateSql, (err, data)=>{
             if(err){
@@ -374,6 +379,9 @@ app.put('/funcionarios/:id', (request, response)=>{
             }
             response.status(201).json({message: 'Informções atualizadas!'})
         })
+        })
+
+        
     })
 })
 
