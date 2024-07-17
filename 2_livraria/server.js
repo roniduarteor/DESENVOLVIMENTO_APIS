@@ -377,7 +377,23 @@ app.put('/funcionarios/:id', (request, response)=>{
     })
 })
 
+app.delete('/funcionarios/:id', (request, response)=>{
+    const {id} = request.params
 
+    const deleteSql = /*sql*/ `delete from funcionarios where id = "${id}"`
+    conn.query(deleteSql, (err, info)=>{
+        if(err){
+            console.log(err)
+            response.status(500).json({message: "Erro ao deletar funcionário"})
+            return
+        }
+        if(info.affectedRows === 0){
+            response.status(404).json({message: "Funcionário não encontrado"})
+        }
+
+        response.status(201).json({message: 'Funcionário deletado!'})
+    })
+})
 
 //rota 404
 app.use((request, response)=>{
