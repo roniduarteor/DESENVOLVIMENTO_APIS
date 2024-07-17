@@ -11,22 +11,19 @@ app.use(express.json())
 
 //Criar conexão com o banco de dados MySQL
 
-const conn = mysql.createConnection({ // usado para estebelecar conexões
-    host: "localhost",
-    user: "root",
-    password: 'Sen@iDev77!.',
-    database: 'livraria_js',
-    port: '3306'
-})
+// const conn = mysql.createConnection({ // usado para estebelecar conexões
+//     host: "localhost",
+//     user: "root",
+//     password: 'Sen@iDev77!.',
+//     database: 'livraria_js',
+//     port: '3306'
+// })
 
 // conectar ao banco de dados
 
-conn.connect((err)=>{
-    if(err){
-        console.error(err.stack) // para dizer qual foi exatamente o erro que aconteceu
-    }
-    console.log("MySQL conectado")
-})
+/******************************* rotas de Livros *******************************/
+
+
 
 app.get("/livros", (request, response)=>{
 
@@ -198,6 +195,45 @@ app.delete('/livros/:id', (request, response)=>{
         }
 
         response.status(200).json({message: 'Livro selecionado foi deletado'})
+    })
+})
+
+
+/******************************* rotas de Funcionários *******************************/
+/* id, nome, cargo, data_contratacao, salario, email, created_at, updated_at */
+// tem que ter validação para o email ser diferente
+// Rota 01 -> lista todos
+// Rota 02 -> cadastra funcionário ( único email por funcionário )
+// Rota 03 -> Lista UM(1) funcionário
+// Rota 04 -> Atualiza UM(1) funcionário
+// rota 05 -> Deletar Um(1) funcionário
+
+const conn = mysql.createConnection({ // usado para estebelecar conexões
+    host: "localhost",
+    user: "root",
+    password: 'Sen@iDev77!.',
+    database: 'funcionarios',
+    port: '3306'
+})
+
+conn.connect((err)=>{
+    if(err){
+        console.error(err.stack) // para dizer qual foi exatamente o erro que aconteceu
+    }
+    console.log("MySQL conectado")
+})
+
+app.get('/funcionarios', (request, response)=>{
+    const sql = /*sql*/`SELECT * FROM funcionarios`
+
+    conn.query(sql, (err, data)=>{
+        if(err){
+        console.error(err)
+        response.status(500).json({message: "Erro ao buscar todos os funcionarios"})    
+        }
+        const livros = data
+        response.status(200).json(livros)
+        
     })
 })
 
