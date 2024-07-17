@@ -204,8 +204,8 @@ app.delete('/livros/:id', (request, response)=>{
 // tem que ter validação para o email ser diferente
 // Rota 01 -> lista todos OK
 // Rota 02 -> cadastra funcionário ( único email por funcionário ) OK
-// Rota 03 -> Lista UM(1) funcionário
-// Rota 04 -> Atualiza UM(1) funcionário
+// Rota 03 -> Lista UM(1) funcionário OK
+// Rota 04 -> Atualiza UM(1) funcionário OK
 // rota 05 -> Deletar Um(1) funcionário
 
 const conn = mysql.createConnection({ // usado para estebelecar conexões
@@ -315,6 +315,69 @@ app.get('/funcionarios/:id', (request, response)=>{
         response.status(200).json(funcionario)
     })
 })
+
+app.put('/funcionarios/:id', (request, response)=>{
+    const {id} = request.params
+    const {nome, cargo, data_contratacao, salario, email} = request.body
+
+    if(!nome){
+        response.status(500).json({message: "Nome do funcionário é obrigatório"})
+        return
+    }
+    if(!cargo){
+        response.status(500).json({message: "cargo do funcionário é obrigatório"})
+        return
+    }if(!data_contratacao){
+        response.status(500).json({message: "A data de contratação do funcionário é obrigatório"})
+        return
+    }if(!salario){
+        response.status(500).json({message: "salario do funcionário é obrigatório"})
+        return
+    }if(!email){
+        response.status(500).json({message: "email do funcionário é obrigatório"})
+        return
+    }
+
+    const checkSql = /*sql*/ `SELECT * FROM funcionarios WHERE id = "${id}"`
+
+    conn.query(checkSql, (err, data)=>{
+        if(err){
+            console.log(err)
+            response.status(500).json({message: "Erro ao verificar se funcionário já está cadastrado"})
+            return
+        }
+
+        if(data.length === 0){
+            response.status(500).json({message: "Funcionário não existe no banco de dados"})
+            return
+        }
+
+        const updateSql = /*sql*/ `UPDATE funcionarios SET nome = "${nome}", cargo = "${cargo}", data_contratacao = "${data_contratacao}", salario = "${salario}", email = "${email}" WHERE id = "${id}"`
+
+        const checkSqlEmail = /*sql*/ `
+        SELECT * FROM funcionarios
+        WHERE email = "${email}"`
+
+        conn.query(checkSqlEmail, (err)=>{
+            if(err){
+                console.error(err)
+                response.status(500).json({message: "Erro ao verificar se email já está cadastrado"})
+                return
+            }
+        })
+
+        conn.query(updateSql, (err, data)=>{
+            if(err){
+                console.error(err)
+                response.status(500).json({message: 'Erro ao atualizar funcionário'})
+                return
+            }
+            response.status(201).json({message: 'Informções atualizadas!'})
+        })
+    })
+})
+
+
 
 //rota 404
 app.use((request, response)=>{
