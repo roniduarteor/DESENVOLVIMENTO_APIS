@@ -253,13 +253,13 @@ app.post('/funcionarios', (request, response)=>{
     }if(!salario){
         response.status(500).json({message: "salario do funcionário é obrigatório"})
         return
-    }if(!email){
+    }if(!email.includes('@')){
         response.status(500).json({message: "email do funcionário é obrigatório"})
         return
     }
 
     
-
+        // verifica se o email consta no banco de dados
     const checkSql = /*sql*/ `
     SELECT * FROM funcionarios
     WHERE email = "${email}"
@@ -333,7 +333,7 @@ app.put('/funcionarios/:id', (request, response)=>{
     }if(!salario){
         response.status(500).json({message: "salario do funcionário é obrigatório"})
         return
-    }if(!email){
+    }if(!email.includes("@")){
         response.status(500).json({message: "email do funcionário é obrigatório"})
         return
     }
@@ -411,3 +411,14 @@ app.use((request, response)=>{
 app.listen(PORT, ()=>{
     console.log(`Servidor on PORT ${PORT}`)
 })
+
+// vai ver se a conexão foi estabelecida
+process.on('SIGINT', ()=>{
+    conn.end((err)=>{ // para fechar a conexão, mas se n conseguir vai mostrar o erro
+        if(err){
+            console.error(`Erro ao fechar a fonexão ${err.message}`)
+        }
+        console.log("Conexão com MYSQL encerrada")
+        process.exit();
+    })
+}) // evitar que invadam o banco de dados
