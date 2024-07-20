@@ -8,9 +8,11 @@ import conn from './config/conn.js'
 
 //importacao dos modulos e criacao das tabelas
 import './models/livroModel.js'
+import './models/clienteModel.js'
 
 // importação das nossas rotas
 import livroRoutes from "./routes/livroRoutes.js"
+import clienteRoutes from './routes/clienteRoutes.js'
 
 const PORT = process.env.PORT
 
@@ -21,7 +23,8 @@ app.use(express.urlencoded({extended: true}))
 
 // utilização das rotas
 // http://localhost:3333/livros
-app.use('/livros', livroRoutes) // rota só vai ser acessada se for através desse endpoint
+// app.use('/livros', livroRoutes) // rota só vai ser acessada se for através desse endpoint
+app.use('/clientes', clienteRoutes)
 
 app.get('/', (request, response)=>{
     response.send('Olá, Mundo!')
