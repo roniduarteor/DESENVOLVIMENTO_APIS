@@ -20,8 +20,5 @@ conn.query(tableLivros, (err, result, field)=>{
         console.error("Erro ao criar a tabela" + err.stack)
         return
     }
-
-    console.log(result)
-    console.log(field)
-    console.log("Tabela criada com sucesso")
+    console.log("Tabela [livros] criada com sucesso")
 })
