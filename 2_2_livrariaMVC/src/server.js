@@ -9,10 +9,14 @@ import conn from './config/conn.js'
 //importacao dos modulos e criacao das tabelas
 import './models/livroModel.js'
 import './models/clienteModel.js'
+import './models/funcionarioModel.js'
+import './models/emprestimoModel.js'
 
 // importação das nossas rotas
 import livroRoutes from "./routes/livroRoutes.js"
 import clienteRoutes from './routes/clienteRoutes.js'
+import funcionarioRoutes from '../src/routes/funcionarioRoutes.js'
+import emprestimoRoutes from '../src/routes/emprestimoRoutes.js'
 
 const PORT = process.env.PORT
 
@@ -26,6 +30,8 @@ app.use(express.urlencoded({extended: true}))
 // app.use('/livros', livroRoutes) // rota só vai ser acessada se for através desse endpoint
 app.use('/clientes', clienteRoutes)
 app.use('/livros', livroRoutes)
+app.use('/funcionarios', funcionarioRoutes)
+app.use('/emprestimos', emprestimoRoutes)
 
 app.get('/', (request, response)=>{
     response.send('Olá, Mundo!')

@@ -7,8 +7,8 @@ const router = Router()
 
 router.get('/', getCliente)
 router.post('/criar', cadastrarCliente)
-router.get('/:id', buscarCliente)
-router.put('/editar/:id', editarCliente)
-router.delete('/remover/:id', deletarCliente)
+router.get('/:cliente_id', buscarCliente)
+router.put('/editar/:cliente_id', editarCliente)
+router.delete('/remover/:cliente_id', deletarCliente)
 
 export default router; // exporta o router já que ele possui todas as rotas que colocamos aqui nesse arquivo

@@ -57,7 +57,7 @@ export const cadastrarCliente = (request, response)=>{
             return console.log(err)
         }
 
-        const id = uuidv4() // passando o id aleatório através do uuid
+        const cliente_id = uuidv4() // passando o id aleatório através do uuid
 
         // agora vamos cadastrar as informações
         // const insertSql = /*sql*/ `insert into clientes(id, nome, email, senha, imagem) 
@@ -67,12 +67,12 @@ export const cadastrarCliente = (request, response)=>{
         values(?,?,?,?,?);`
 
         const insertSqlData = [
-            "id",
+            "cliente_id",
             "nome",
             "email",
             "senha",
             "imagem",
-            id,
+            cliente_id,
             nome,
             email,
             senha,
@@ -90,13 +90,13 @@ export const cadastrarCliente = (request, response)=>{
 }
 
 export const buscarCliente = (request, response)=>{
-    const {id} = request.params // pega o id que for passado na rota
+    const {cliente_id} = request.params // pega o id que for passado na rota
 
     const sql = /*sql*/ `select * from clientes where ?? = ?`
 
     const sqlData = [
-        "id",
-        id
+        "cliente_id",
+        cliente_id
     ]
 
     conn.query(sql, sqlData, (err, data) =>{
@@ -115,7 +115,7 @@ export const buscarCliente = (request, response)=>{
 }
 
 export const editarCliente = (request,response)=>{
-    const {id} = request.params
+    const {cliente_id} = request.params
     const {nome, email, senha, imagem} = request.body 
     if(!nome){
         response.status(400).json({message: 'O nome é obrigatório!'})
@@ -154,9 +154,22 @@ export const editarCliente = (request,response)=>{
             return console.log(err)
         }
 
-        const updateSql = /*sql*/ ` update clientes set nome = "${nome}", email = "${email}", senha = "${senha}", imagem = "${imagem}" where id = "${id}"`
+        const updateSql = /*sql*/ ` update clientes set ?? = ?, ?? = ?, ?? = ?, ?? = ? where ?? = ?`
+
+        const updateSqlData = [
+            "nome",
+            nome,
+            "email",
+            email,
+            "senha",
+            senha,
+            "imagem",
+            imagem,
+            "cliente_id",
+            cliente_id
+        ]
         
-        conn.query(updateSql, (err)=>{
+        conn.query(updateSql, updateSqlData, (err)=>{
             if(err){
                 console.error(err)
                 response.status(500).json({message: "Erro ao atualizar cliente no banco de dados"})
@@ -167,13 +180,13 @@ export const editarCliente = (request,response)=>{
 }
 
 export const deletarCliente = (request, response)=>{
-    const {id} = request.params // pega o id que for passado na rota
+    const {cliente_id} = request.params // pega o id que for passado na rota
 
     const deleteSql = /*sql*/ `delete from clientes where ?? = ?`
 
     const deleteSqlData = [
-        "id",
-        id
+        "cliente_id",
+        cliente_id
     ]
 
     conn.query(deleteSql, deleteSqlData, (err, info)=>{

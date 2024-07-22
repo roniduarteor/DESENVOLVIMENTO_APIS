@@ -84,14 +84,14 @@ export const cadastrarLivro = (request, response)=>{
         values(?, ?, ?, ?, ?, ?, ?)`
 
         const insertSqlData = [
-            "id",
+            "livro_id",
             "titulo",
             "autor",
             "ano_publicacao",
             "genero",
             "preco",
             "disponibilidade",
-            id,
+            livro_id,
             titulo,
             autor,
             ano_publicacao,
@@ -111,13 +111,13 @@ export const cadastrarLivro = (request, response)=>{
 }
 
 export const buscarLivro = (request, response)=>{
-    const {id} = request.params // pega o id que for passado na rota
+    const {livro_id} = request.params // pega o id que for passado na rota
 
     const sql = /*sql*/ `select * from livros where ?? = ?`
 
     const sqlData = [
-        "id",
-        id
+        "livro_id",
+        livro_id
     ]
 
     conn.query(sql, sqlData, (err, data) =>{
@@ -136,7 +136,7 @@ export const buscarLivro = (request, response)=>{
 }
 
 export const editarLivro = (request,response)=>{
-    const {id} = request.params // pega o id que for passado na rota
+    const {livro_id} = request.params // pega o id que for passado na rota
 
     const {titulo, autor, ano_publicacao, genero, preco, disponibilidade} = request.body
 
@@ -170,8 +170,8 @@ export const editarLivro = (request,response)=>{
     const checkSql = /*sql*/ ` select * from livros where ?? = ?` // aqui ele verifica no banco de dados se o id do livro corresponde ao id que está sendo passado aqui (no thunderclient)
 
     const checkSqlData = [
-        "id",
-        id
+        "livro_id",
+        livro_id
     ]
 
     conn.query(checkSql, checkSqlData, (err, data)=>{
@@ -186,9 +186,26 @@ export const editarLivro = (request,response)=>{
         }
 
         // Consulta SQl para atualizar livro
-        const updateSql = /*sql*/ ` update livros set titulo = "${titulo}", autor = "${autor}", ano_publicacao = "${ano_publicacao}", genero = "${genero}", preco = "${preco}", disponibilidade = "${disponibilidade}" where id = "${id}"`
+        const updateSql = /*sql*/ ` update livros set ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? where ?? = ?`
+
+        const updateSqlData = [
+            "titulo",
+            titulo,
+            "autor",
+            autor,
+            "ano_publicacao",
+            ano_publicacao,
+            "genero",
+            genero,
+            "preco",
+            preco,
+            "disponibilidade",
+            disponibilidade,
+            "livro_id",
+            livro_id
+        ]
         
-        conn.query(updateSql, (err)=>{
+        conn.query(updateSql, updateSqlData, (err)=>{
             if(err){
                 console.error(err)
                 response.status(500).json({message: "Erro ao atualizar livro no banco de dados"})
@@ -199,13 +216,13 @@ export const editarLivro = (request,response)=>{
 }
 
 export const deletarLivro = (request, response)=>{
-    const {id} = request.params // pega o id que for passado na rota
+    const {livro_id} = request.params // pega o id que for passado na rota
 
     const deleteSql = /*sql*/ `delete from livros where ?? = ?`
 
     const deleteSqlData = [
-        "id",
-        id
+        "livro_id",
+        livro_id
     ]
 
 

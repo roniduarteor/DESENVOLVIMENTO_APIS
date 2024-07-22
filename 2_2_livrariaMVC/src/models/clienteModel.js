@@ -3,7 +3,7 @@ import conn from '../config/conn.js'
 // id nome email senha imagem
 const tableClientes = /*sql*/ `
     CREATE TABLE if NOT EXISTS clientes(
-        id varchar(60) primary key,
+        cliente_id varchar(60) primary key,
         nome varchar(255) not null,
         email varchar(255) not null,
         senha varchar(255) not null,
