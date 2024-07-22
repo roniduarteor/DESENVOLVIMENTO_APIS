@@ -32,12 +32,22 @@ export const cadastrarCliente = (request, response)=>{
         return
     }
 
+    // const checkSql = /*sql*/ `
+    // SELECT * FROM clientes 
+    // WHERE email = "${email}"
+    // `;
+
     const checkSql = /*sql*/ `
     SELECT * FROM clientes 
-    WHERE email = "${email}"
+    WHERE ?? = ?
     `;
 
-    conn.query(checkSql, (err, data)=>{
+    const checkSqlData = [
+        "email",
+        email
+    ]
+
+    conn.query(checkSql, checkSqlData, (err, data)=>{
         if(err){
             response.status(500).json({message: "Erro ao buscar os clientes"})
             return console.log(err)
@@ -50,10 +60,26 @@ export const cadastrarCliente = (request, response)=>{
         const id = uuidv4() // passando o id aleatório através do uuid
 
         // agora vamos cadastrar as informações
-        const insertSql = /*sql*/ `insert into clientes(id, nome, email, senha, imagem) 
-        values("${id}","${nome}","${email}","${senha}","${imagem}");`
+        // const insertSql = /*sql*/ `insert into clientes(id, nome, email, senha, imagem) 
+        // values("${id}","${nome}","${email}","${senha}","${imagem}");`
 
-        conn.query(insertSql, (err)=>{
+        const insertSql = /*sql*/ `insert into clientes(??, ??, ??, ??, ??) 
+        values(?,?,?,?,?);`
+
+        const insertSqlData = [
+            "id",
+            "nome",
+            "email",
+            "senha",
+            "imagem",
+            id,
+            nome,
+            email,
+            senha,
+            imagem
+        ]
+
+        conn.query(insertSql, insertSqlData, (err)=>{
             if(err){
                 response.status(500).json({message: 'Erro ao cadastrar o cliente'})
                 return console.log(err)
@@ -66,8 +92,14 @@ export const cadastrarCliente = (request, response)=>{
 export const buscarCliente = (request, response)=>{
     const {id} = request.params // pega o id que for passado na rota
 
-    const sql = /*sql*/ `select * from clientes where id = "${id}"`
-    conn.query(sql, (err, data) =>{
+    const sql = /*sql*/ `select * from clientes where ?? = ?`
+
+    const sqlData = [
+        "id",
+        id
+    ]
+
+    conn.query(sql, sqlData, (err, data) =>{
         if(err){
             response.status(500).json({message: "Erro ao buscar cliente"})
             return
@@ -104,10 +136,15 @@ export const editarCliente = (request,response)=>{
 
     const checkSql = /*sql*/ `
     SELECT * FROM clientes 
-    WHERE email = "${email}"
+    WHERE ?? = ?
     `;
 
-    conn.query(checkSql, (err, data)=>{
+    const checkSqlData = [
+        "email",
+        email
+    ]
+
+    conn.query(checkSql, checkSqlData, (err, data)=>{
         if(err){
             response.status(500).json({message: "Erro ao buscar os clientes"})
             return console.log(err)
@@ -132,8 +169,14 @@ export const editarCliente = (request,response)=>{
 export const deletarCliente = (request, response)=>{
     const {id} = request.params // pega o id que for passado na rota
 
-    const deleteSql = /*sql*/ `delete from clientes where id = "${id}"`
-    conn.query(deleteSql, (err, info)=>{
+    const deleteSql = /*sql*/ `delete from clientes where ?? = ?`
+
+    const deleteSqlData = [
+        "id",
+        id
+    ]
+
+    conn.query(deleteSql, deleteSqlData, (err, info)=>{
         if(err){
             console.error(err)
             response.status(500).json({message: 'Erro ao deletar cliente'})

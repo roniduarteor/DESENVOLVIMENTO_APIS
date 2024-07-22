@@ -25,6 +25,7 @@ app.use(express.urlencoded({extended: true}))
 // http://localhost:3333/livros
 // app.use('/livros', livroRoutes) // rota só vai ser acessada se for através desse endpoint
 app.use('/clientes', clienteRoutes)
+app.use('/livros', livroRoutes)
 
 app.get('/', (request, response)=>{
     response.send('Olá, Mundo!')

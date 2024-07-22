@@ -40,14 +40,30 @@ export const cadastrarLivro = (request, response)=>{
     }
 
     // cadastrar um livro -> antes preciso saber se esse livro existe
-    const checkSql = /*sql*/ `
-    SELECT * FROM livros 
-    WHERE titulo = "${titulo}" AND 
-    autor = "${autor}" AND 
-    ano_publicacao = "${ano_publicacao}"
-    `;
+    // const checkSql = /*sql*/ `
+    // SELECT * FROM livros 
+    // WHERE titulo = "${titulo}" AND 
+    // autor = "${autor}" AND 
+    // ano_publicacao = "${ano_publicacao}"
+    // `;
 
-    conn.query(checkSql, (err, data)=>{
+    const checkSql = /*sql*/ `select * from livros
+    where ?? = ? AND
+    ?? = ? AND
+    ?? = ?`;
+
+    const checkSqlData = [
+        "titulo",
+        titulo,
+        "autor",
+        autor,
+        "ano_publicacao",
+        ano_publicacao
+    ]
+
+
+
+    conn.query(checkSql, checkSqlData, (err, data)=>{
         if(err){
             response.status(500).json({message: "Erro ao buscar os livros"})
             return console.log(err)
@@ -61,10 +77,30 @@ export const cadastrarLivro = (request, response)=>{
         const disponibilidade = 1 // aqui coloca 1 pq o banco de dados lá vai interpretar que está disponivel, e se estamos cadastrando é pq iremos ter o livro disponível
 
         // agora vamos cadastrar as informações
-        const insertSql = /*sql*/ `insert into livros(id, titulo, autor, ano_publicacao, genero, preco, disponibilidade) 
-        values("${id}","${titulo}","${autor}","${ano_publicacao}","${genero}","${preco}","${disponibilidade}");`
+        // const insertSql = /*sql*/ `insert into livros(id, titulo, autor, ano_publicacao, genero, preco, disponibilidade) 
+        // values("${id}","${titulo}","${autor}","${ano_publicacao}","${genero}","${preco}","${disponibilidade}");`
 
-        conn.query(insertSql, (err)=>{
+        const insertSql = /*sql*/ `insert into livros(??, ??, ??, ??, ??, ??, ??)
+        values(?, ?, ?, ?, ?, ?, ?)`
+
+        const insertSqlData = [
+            "id",
+            "titulo",
+            "autor",
+            "ano_publicacao",
+            "genero",
+            "preco",
+            "disponibilidade",
+            id,
+            titulo,
+            autor,
+            ano_publicacao,
+            genero,
+            preco,
+            disponibilidade
+        ]
+
+        conn.query(insertSql, insertSqlData, (err)=>{
             if(err){
                 response.status(500).json({message: 'Erro ao cadastrar o livro'})
                 return console.log(err)
@@ -77,8 +113,14 @@ export const cadastrarLivro = (request, response)=>{
 export const buscarLivro = (request, response)=>{
     const {id} = request.params // pega o id que for passado na rota
 
-    const sql = /*sql*/ `select * from livros where id = "${id}"`
-    conn.query(sql, (err, data) =>{
+    const sql = /*sql*/ `select * from livros where ?? = ?`
+
+    const sqlData = [
+        "id",
+        id
+    ]
+
+    conn.query(sql, sqlData, (err, data) =>{
         if(err){
             response.status(500).json({message: "Erro ao buscar livro"})
             return
@@ -125,8 +167,14 @@ export const editarLivro = (request,response)=>{
         return
     }
 
-    const checkSql = /*sql*/ ` select * from livros where id = "${id}"` // aqui ele verifica no banco de dados se o id do livro corresponde ao id que está sendo passado aqui (no thunderclient)
-    conn.query(checkSql, (err, data)=>{
+    const checkSql = /*sql*/ ` select * from livros where ?? = ?` // aqui ele verifica no banco de dados se o id do livro corresponde ao id que está sendo passado aqui (no thunderclient)
+
+    const checkSqlData = [
+        "id",
+        id
+    ]
+
+    conn.query(checkSql, checkSqlData, (err, data)=>{
         // validações para checar se o livro existe no banco de dados
         if(err){
         console.error(err)
@@ -153,8 +201,15 @@ export const editarLivro = (request,response)=>{
 export const deletarLivro = (request, response)=>{
     const {id} = request.params // pega o id que for passado na rota
 
-    const deleteSql = /*sql*/ `delete from livros where id = "${id}"`
-    conn.query(deleteSql, (err, info)=>{
+    const deleteSql = /*sql*/ `delete from livros where ?? = ?`
+
+    const deleteSqlData = [
+        "id",
+        id
+    ]
+
+
+    conn.query(deleteSql, deleteSqlData, (err, info)=>{
         if(err){
             console.error(err)
             response.status(500).json({message: 'Erro ao deletar livro'})
