@@ -33,10 +33,6 @@ app.use('/livros', livroRoutes)
 app.use('/funcionarios', funcionarioRoutes)
 app.use('/emprestimos', emprestimoRoutes)
 
-app.get('/', (request, response)=>{
-    response.send('Olá, Mundo!')
-})
-
 app.listen(PORT, ()=>{
     console.log(`Servidor on PORT: ${PORT}`)
 })
