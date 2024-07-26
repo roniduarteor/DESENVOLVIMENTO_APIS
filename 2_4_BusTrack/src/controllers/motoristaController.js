@@ -2,7 +2,7 @@ import conn from '../config/conn.js'
 import {v4 as uuidv4} from 'uuid'
 
 export const postMotorista = (request, response)=>{
-    const {nome, dataNascimento, numeroCarteiraHabilitacao, onibus_id} = request.body
+    const {nome, dataNascimento, numeroCarteiraHabilitacao} = request.body
 
     if(!nome){
         response.status(400).json({message: 'O nome do motorista é obrigatório!'})
@@ -14,10 +14,6 @@ export const postMotorista = (request, response)=>{
     }
     if(!numeroCarteiraHabilitacao){
         response.status(400).json({message: 'O numero da carteira de habilitação é obrigatório!'})
-        return
-    }
-    if(!onibus_id){
-        response.status(400).json({message: 'O Id do ônibus é obrigatório!'})
         return
     }
 
@@ -51,8 +47,8 @@ export const postMotorista = (request, response)=>{
         const motorista_id = uuidv4()
 
         const insertSql = /*sql*/ `
-        insert into motoristas(??, ??, ??, ??, ??)
-        values(?, ?, ?, ?, ?)
+        insert into motoristas(??, ??, ??, ??)
+        values(?, ?, ?, ?)
         `
 
         const insertSqlData = [
@@ -60,12 +56,11 @@ export const postMotorista = (request, response)=>{
             "nome",
             "dataNascimento",
             "numeroCarteiraHabilitacao",
-            "onibus_id",
+   
             motorista_id,
             nome,
             dataNascimento,
             numeroCarteiraHabilitacao,
-            onibus_id
         ]
 
         conn.query(insertSql, insertSqlData, (err)=>{
@@ -119,6 +114,7 @@ export const deleteMotorista = (request, response)=>{
         if(err){
             console.error(err)
             response.status(500).json({message: 'Erro ao deletar motorista'})
+            return
         }
         console.log(info)
         if(info.affectedRows === 0){

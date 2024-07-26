@@ -3,7 +3,7 @@ import {v4 as uuidv4} from 'uuid'
 
 export const postOnibus = (request, response)=>{
 
-    const {placa, modelo, anoFabricacao, capacidade} = request.body
+    const {placa, modelo, anoFabricacao, capacidade, id_linha, id_motorista} = request.body
 
     if(!placa){
         response.status(400).json({message: 'a placa é é obrigatória!'})
@@ -19,6 +19,14 @@ export const postOnibus = (request, response)=>{
     }
     if(!capacidade){
         response.status(400).json({message: 'A capacidade é obrigatória!'})
+        return
+    }
+    if(!id_linha){
+        response.status(400).json({message: 'A identidicação da linha é obrigatória!'})
+        return
+    }
+    if(!id_motorista){
+        response.status(400).json({message: 'A identidicação do motorista é obrigatória!'})
         return
     }
 
@@ -49,8 +57,8 @@ export const postOnibus = (request, response)=>{
         const onibus_id = uuidv4()
 
         const insertSql = /*sql*/ `
-        insert into onibus(??, ??, ??, ??,??)
-        values(?, ?, ?, ?, ?)
+        insert into onibus(??, ??, ??, ??,??, ??, ??)
+        values(?, ?, ?, ?, ?, ?, ?)
         `
 
         const insertSqlData = [
@@ -59,11 +67,15 @@ export const postOnibus = (request, response)=>{
             "modelo",
             "anoFabricacao",
             "capacidade",
+            "id_linha",
+            "id_motorista",
             onibus_id,
             placa,
             modelo,
             anoFabricacao,
-            capacidade
+            capacidade,
+            id_linha,
+            id_motorista
         ]
 
         conn.query(insertSql, insertSqlData, (err)=>{
@@ -80,7 +92,11 @@ export const postOnibus = (request, response)=>{
 export const getIdOnibus = (request, response)=>{
     const {onibus_id} = request.params
 
-    const sql = /*sql*/ `select * from onibus where ?? = ?`
+    const sql = /*sql*/ `
+    select * from onibus 
+    inner join linhas on onibus.id_linha = linhas.linha_id
+    inner join motoristas on onibus.id_motorista = motoristas.motorista_id
+    where ?? = ?`
 
     const sqlData = [
         "onibus_id",
@@ -105,8 +121,13 @@ export const getIdOnibus = (request, response)=>{
 
 export const getOnibus = (request, response)=>{
     const sql = /*sql*/ `
-    select * from onibus
+    select *
+    from onibus
+    inner join linhas on onibus.id_linha = linhas.linha_id
+    inner join motoristas on onibus.id_motorista = motoristas.motorista_id
     `
+
+    
 
     conn.query(sql, (err, data)=>{
         if(err){

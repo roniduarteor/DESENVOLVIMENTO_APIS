@@ -6,9 +6,7 @@ const tableLinhas = /*sql*/ `
         nomeLinha varchar(255) not null,
         numeroLinha int not null,
         itinerario varchar(255) not null,
-        onibus_id varchar(60) not null,
-        foreign key (onibus_id) references onibus(onibus_id),
-
+    
         created_at timestamp default current_timestamp,
         updated_at timestamp default current_timestamp on update current_timestamp
     )
